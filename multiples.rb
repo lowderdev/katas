@@ -1,17 +1,71 @@
 class Multiples
-  def initialize(range)
+  attr_accessor :range
+
+  def initialize(range = 1000)
     @range = range
   end
 
-  def get_multiples_of_3_and_5(x)
-    (3..x).to_a.select { |i| i % 3 == 0 || i % 5 == 0 }
+  def simple
+    (1...1000).select { |i| i % 3 == 0 || i % 5 == 0 }.reduce(:+)
   end
 
-  def get_multiples_of(*args)
+  def dixon_simple
+    sum = 0
+    (1..333).each { |i| sum += i*3 }
+    (1...200).each { |i| sum += i*5 if i*5 % 3 != 0 }
+    sum
+  end
+
+  def get_sum_of_dixon_multiples(x, y, z)
+    sum = 0
+    (1..@range/x).each { |i| sum += i*x }
+    (1..@range/y).each { |i| sum += i*y if i*y % x != 0 }
+    (1..@range/z).each { |i| sum += i*z if i*z % y != 0 && i*z % x != 0 }
+    sum
+  end
+
+  def get_sum_of_logan_multiples(x, y, z)
+    sum = 0
+    (1..@range).each { |i| sum += i if i % x == 0 || i % y == 0 || i % z == 0 }
+    sum
+  end
+
+  def get_sum_of_multiples(*args)
     multiples = []
     args.each do |x|
-      multiples << (1..@range).to_a.select { |i| i % x == 0 }
+      (1..@range/x).each { |i| multiples << i*x }
     end
-    multiples.flatten.uniq.sort
+    multiples.uniq.reduce(:+)
+  end
+
+  def get_sum(*args)
+    sum = 0
+    (1..@range).each { |i| sum += i if check(i, args) }
+    multiples.reduce(:+)
+  end
+
+  private
+    def check(i, args)
+      puts i
+      i % args.shift == 0 || (args.length > 1 ? check(i, args) : false)
+    end
+end
+
+class Bench
+  def self.first
+    Benchmark.bm do |x|
+      x.report {
+        Multiples.new(10000000).get_sum_of_dixon_multiples(101, 102, 103)
+      }
+    end
+  end
+
+
+  def self.second
+    Benchmark.bm do |x|
+      x.report {
+        Multiples.new(10000000).dynamic_sum(101, 102, 103)
+      }
+    end
   end
 end

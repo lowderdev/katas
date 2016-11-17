@@ -55,7 +55,7 @@ class Bench
   def self.first
     Benchmark.bm do |x|
       x.report {
-        Multiples.new(10000000).get_sum_of_dixon_multiples(101, 102, 103)
+        Multiples.new(100000).get_sum_of_multiples(3,5,7)
       }
     end
   end
@@ -64,7 +64,7 @@ class Bench
   def self.second
     Benchmark.bm do |x|
       x.report {
-        Multiples.new(10000000).dynamic_sum(101, 102, 103)
+        Multiples.new(100000).dynamic_sum(101, 102, 103)
       }
     end
   end
